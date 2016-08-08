@@ -43,3 +43,13 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:24.1.1'
 }
+
+def installAllDebug = tasks.create('installAllDebug')
+installAllDebug.description = 'Install all applications.'
+android.applicationVariants.all { variant ->
+    if (variant.name.contains("Debug")) {
+        installAllDebug.dependsOn(variant.install)
+        // Ensure we end up in the same group as the other install tasks.
+        installAllDebug.group = variant.install.group
+    }
+}
