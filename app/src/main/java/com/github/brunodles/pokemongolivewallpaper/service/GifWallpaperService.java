@@ -27,7 +27,7 @@ public class GifWallpaperService extends android.service.wallpaper.WallpaperServ
     }
 
     private class GifWallpaperEngine extends Engine {
-        private final int frameDuration = 40;
+        private final int frameDuration = 20;
         private final int movieDuration;
         private final Paint backgroundPaint;
 
@@ -73,26 +73,16 @@ public class GifWallpaperService extends android.service.wallpaper.WallpaperServ
             canvas.drawRect(0, 0, canvasWidth, canvasHeight, backgroundPaint);
             canvas.save();
 
-
             float widthScale = canvasWidth / movieWidth;
             float heightScale = canvasHeight / movieHeight;
-            float scale;
-            boolean needTranslate;
-            if (widthScale < heightScale) {
-                scale = widthScale;
-                needTranslate = scale < 1;
-            } else {
-                scale = heightScale;
-                needTranslate = false;
-            }
+            float scale = Math.min(widthScale, heightScale);
 
             if (scale == 0) scale = 1f;
             canvas.scale(scale, scale);
 
-            float x = ((canvasWidth - movieWidth) / 2) / scale;
-            float y = ((canvasHeight - movieHeight) / 2) / scale;
-            movie.draw(canvas, 0, y);
-            if (needTranslate) canvas.translate(x, 0);
+            float x = ((canvasWidth - movieWidth * scale) / 2);
+            float y = ((canvasHeight - movieHeight * scale) / 2);
+            movie.draw(canvas, x, y);
 
             canvas.restore();
             holder.unlockCanvasAndPost(canvas);
