@@ -1,4 +1,4 @@
-package com.github.brunodles.teamvalorwallpaper;
+package com.github.brunodles.pokemongolivewallpaper;
 
 import org.junit.Test;
 
