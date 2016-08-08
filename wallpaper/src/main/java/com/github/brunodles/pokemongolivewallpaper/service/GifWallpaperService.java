@@ -100,7 +100,7 @@ public class GifWallpaperService extends android.service.wallpaper.WallpaperServ
         public void onVisibilityChanged(boolean visible) {
             this.visible = visible;
             if (visible) {
-                handler.post(drawGIF);
+                startGif();
             } else {
                 handler.removeCallbacks(drawGIF);
             }
