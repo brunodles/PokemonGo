@@ -74,7 +74,7 @@ public class GifWallpaperService extends android.service.wallpaper.WallpaperServ
             boolean needTranslate;
             if (widthScale < heightScale) {
                 scale = widthScale;
-                needTranslate = true;
+                needTranslate = scale < 1;
             } else {
                 scale = heightScale;
                 needTranslate = false;
@@ -83,8 +83,8 @@ public class GifWallpaperService extends android.service.wallpaper.WallpaperServ
             if (scale == 0) scale = 1f;
             canvas.scale(scale, scale);
 
-            float x = (canvasWidth - movieWidth) / 2;
-            float y = (canvasHeight - movieHeight) / 2;
+            float x = ((canvasWidth - movieWidth) / 2) / scale;
+            float y = ((canvasHeight - movieHeight) / 2) / scale;
             movie.draw(canvas, 0, y);
             if (needTranslate) canvas.translate(x, 0);
 
