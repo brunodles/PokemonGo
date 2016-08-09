@@ -2,7 +2,6 @@ package com.github.brunodles.pokemongolivewallpaper.service;
 
 import android.graphics.Canvas;
 import android.graphics.Movie;
-import android.graphics.Paint;
 import android.os.Handler;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -29,7 +28,6 @@ public class GifWallpaperService extends android.service.wallpaper.WallpaperServ
     private class GifWallpaperEngine extends Engine {
         private final int frameDuration = 20;
         private final int movieDuration;
-        private final Paint backgroundPaint;
 
         private SurfaceHolder holder;
         private Movie movie;
@@ -37,24 +35,20 @@ public class GifWallpaperService extends android.service.wallpaper.WallpaperServ
         private Handler handler;
         private final float movieWidth;
         private final float movieHeight;
-        private long startTime = 0L;
+        private long startTime = -1L;
 
         public GifWallpaperEngine(Movie movie) {
             this.movie = movie;
+            handler = new Handler();
             movieWidth = movie.width();
             movieHeight = movie.height();
             movieDuration = movie.duration();
-            handler = new Handler();
-            backgroundPaint = new Paint();
-            backgroundPaint.setColor(0x000000);
         }
 
         @Override
         public void onCreate(SurfaceHolder surfaceHolder) {
             super.onCreate(surfaceHolder);
             this.holder = surfaceHolder;
-            startTime = System.currentTimeMillis();
-            handler.post(drawGIF);
         }
 
         private Runnable drawGIF = new Runnable() {
@@ -71,7 +65,6 @@ public class GifWallpaperService extends android.service.wallpaper.WallpaperServ
 
             float canvasWidth = canvas.getWidth();
             float canvasHeight = canvas.getHeight();
-            canvas.drawRect(0, 0, canvasWidth, canvasHeight, backgroundPaint);
             canvas.save();
 
             float widthScale = canvasWidth / movieWidth;
@@ -117,15 +110,14 @@ public class GifWallpaperService extends android.service.wallpaper.WallpaperServ
 
         @Override
         public void onTouchEvent(MotionEvent event) {
+            if (System.currentTimeMillis() < startTime + movieDuration) return;
             if (event.getAction() == MotionEvent.ACTION_UP) {
                 startGif();
             }
         }
 
         private void startGif() {
-            long now = System.currentTimeMillis();
-            if (now < startTime + movieDuration) return;
-            startTime = now;
+            startTime = System.currentTimeMillis();
             handler.post(drawGIF);
         }
     }
