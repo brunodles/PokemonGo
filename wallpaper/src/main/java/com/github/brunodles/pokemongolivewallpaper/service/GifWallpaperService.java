@@ -37,7 +37,7 @@ public class GifWallpaperService extends android.service.wallpaper.WallpaperServ
         private Handler handler;
         private final float movieWidth;
         private final float movieHeight;
-        private long startTime;
+        private long startTime = 0L;
 
         public GifWallpaperEngine(Movie movie) {
             this.movie = movie;
@@ -53,7 +53,8 @@ public class GifWallpaperService extends android.service.wallpaper.WallpaperServ
         public void onCreate(SurfaceHolder surfaceHolder) {
             super.onCreate(surfaceHolder);
             this.holder = surfaceHolder;
-            startGif();
+            startTime = System.currentTimeMillis();
+            handler.post(drawGIF);
         }
 
         private Runnable drawGIF = new Runnable() {
