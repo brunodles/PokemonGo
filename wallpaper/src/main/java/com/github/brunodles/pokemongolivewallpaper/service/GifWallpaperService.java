@@ -51,18 +51,31 @@ public class GifWallpaperService extends android.service.wallpaper.WallpaperServ
             this.holder = surfaceHolder;
         }
 
-        private Runnable drawGIF = new Runnable() {
+        private Runnable drawRunnable = new Runnable() {
             public void run() {
                 draw();
+                scheduleNextDrawIfNeeded();
             }
         };
 
         private void draw() {
             if (!visible) return;
-            long now = System.currentTimeMillis();
-
             Canvas canvas = holder.lockCanvas();
+            drawGif(canvas);
+        }
 
+        private void scheduleNextDrawIfNeeded() {
+            handler.removeCallbacks(drawRunnable);
+            long now = System.currentTimeMillis();
+            if (startTime == 0L || now > startTime + movieDuration) {
+                movie.setTime(movieDuration);
+            } else {
+                movie.setTime((int) (now - startTime) % movieDuration);
+                handler.postDelayed(drawRunnable, frameDuration);
+            }
+        }
+
+        private void drawGif(Canvas canvas) {
             float canvasWidth = canvas.getWidth();
             float canvasHeight = canvas.getHeight();
             canvas.save();
@@ -82,14 +95,6 @@ public class GifWallpaperService extends android.service.wallpaper.WallpaperServ
 
             canvas.restore();
             holder.unlockCanvasAndPost(canvas);
-
-            handler.removeCallbacks(drawGIF);
-            if (startTime == 0L || now > startTime + movieDuration) {
-                movie.setTime(movieDuration);
-            } else {
-                movie.setTime((int) (now - startTime) % movieDuration);
-                handler.postDelayed(drawGIF, frameDuration);
-            }
         }
 
         @Override
@@ -98,14 +103,14 @@ public class GifWallpaperService extends android.service.wallpaper.WallpaperServ
             if (visible) {
                 startGif();
             } else {
-                handler.removeCallbacks(drawGIF);
+                handler.removeCallbacks(drawRunnable);
             }
         }
 
         @Override
         public void onDestroy() {
             super.onDestroy();
-            handler.removeCallbacks(drawGIF);
+            handler.removeCallbacks(drawRunnable);
         }
 
         @Override
@@ -118,7 +123,7 @@ public class GifWallpaperService extends android.service.wallpaper.WallpaperServ
 
         private void startGif() {
             startTime = System.currentTimeMillis();
-            handler.post(drawGIF);
+            handler.post(drawRunnable);
         }
     }
 
