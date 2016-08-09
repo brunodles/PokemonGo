@@ -80,9 +80,11 @@ public class GifWallpaperService extends android.service.wallpaper.WallpaperServ
 
             if (scale == 0) scale = 1f;
             canvas.scale(scale, scale);
+            canvasWidth /= scale;
+            canvasHeight /= scale;
 
-            float x = ((canvasWidth - movieWidth * scale) / 2);
-            float y = ((canvasHeight - movieHeight * scale) / 2);
+            float x = (canvasWidth - movieWidth) / 2;
+            float y = (canvasHeight - movieHeight) / 2;
             movie.draw(canvas, x, y);
 
             canvas.restore();
