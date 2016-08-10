@@ -1,1 +1,1 @@
-include ':wallpaper'
+include ':wallpaper', ':widget'
